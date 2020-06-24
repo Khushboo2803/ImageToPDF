@@ -5,7 +5,10 @@ import {
   Image,
   Alert,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  PermissionsAndroid,
+  CameraRoll,
+  ToastAndroid
 } from 'react-native';
 import style from './stylesheet';
 import {captureScreen} from 'react-native-view-shot';
@@ -17,39 +20,44 @@ export default class App extends React.Component{
     super();
     this.state={
       imageURI : 'https://qph.fs.quoracdn.net/main-qimg-a1e8067787ee595eeb757c0c71988146',
-      viewButton : true
+      viewButton : true,
+      screenPath: ''
     }
-  }
-
-  takeScreenShot = () =>{
-    captureScreen({
-      format: 'jpg',
-      quality: 0.8
-    })
-    .then(
-      uri => this.setState({imageURI: uri}),
-      error => Alert.alert("Something went wrong", error)
-    );
   }
 
   getPDF = async() => {
     try{
-      const page=PDFPage.create().setMediaBox(200,200).drawImage(this.state.imageURI, 'jpg', {
-        x: 5,
-        y: 25,
-        width: 200,
-        height: 100,
-     });
-     const docDir= await PDFLib.getDocumentsDirectory();
-     const pdfPath=`${docDir}/ImageToPdf.pdf`;
-     PDFDocument
-     .create(pdfPath)
-     .addPages(page)
-     .write()
-     .then(
-       path => {
-         console.log("pdf created at "+path);
-       });
+      // To get screen shot of the screen
+      await captureScreen({
+        format: 'jpg',
+        quality: 0.8
+      })
+      .then(
+        uri => {
+            // substring to path starts from /path/emul......
+            const u = uri.substr(7);
+            this.setState({screenPath: u });
+        },
+        error => Alert.alert("Something went wrong", error)
+      );
+
+      // convert image to pdf
+      const options = {
+        imagePaths: [this.state.screenPath],
+        name: `${Date.now().toString()}.pdf`,
+        maxSize: {
+          // optional maximum image dimension - larger images will be resized
+          width: 900,
+          height: Math.round(
+            (Dimensions.get('screen').height / Dimensions.get('screen').width) *
+            900,
+          ),
+        },
+        quality: 0.7, // optional compression paramter
+      };
+      const pdf = await RNImageToPdf.createPDFbyImages(options);
+      ToastAndroid.show("PDF saved at location "+pdf.filePath, ToastAndroid.LONG);
+      console.log(pdf.filePath);
     }
     catch(e){
       console.log(e);
@@ -69,17 +77,14 @@ export default class App extends React.Component{
           {
               this.state.viewButton ? 
               <View>
-                <TouchableOpacity style={style.button} onPress={
+                <TouchableOpacity style={style.button} 
+                onPress={
                   async ()=>{
                     await this.setState({viewButton: false});
-                    await this.takeScreenShot();
+                    await this.getPDF();
                     await this.setState({viewButton: true});
                   }
                 }>
-                  <Text style={style.buttonText}>Take ScreenShot</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={style.button} onPress={this.getPDF}>
                   <Text style={style.buttonText}>Convert To PDF</Text>
                 </TouchableOpacity>
               </View> : null
