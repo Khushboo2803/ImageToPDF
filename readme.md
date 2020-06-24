@@ -10,7 +10,7 @@
 
 * Clone Repos
 ```sh
-$git clone https://github.com/Khushboo2803/ImageToPDF.git
+$ git clone https://github.com/Khushboo2803/ImageToPDF.git
 ```
 
 ### Installation
