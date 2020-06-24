@@ -24,5 +24,9 @@ $ npm install
 ```sh 
 $ react-native run-android
 ```
+
+Note 
+**Icon in not placed in the app**
+
 #### Author
 [Khushboo](https://github.com/khushboo2803) :relaxed: (khushboogrover.mca19.du@gmail.com)

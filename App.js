@@ -6,8 +6,6 @@ import {
   Alert,
   TouchableOpacity,
   Dimensions,
-  PermissionsAndroid,
-  CameraRoll,
   ToastAndroid
 } from 'react-native';
 import style from './stylesheet';
