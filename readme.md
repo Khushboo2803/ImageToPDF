@@ -26,7 +26,7 @@ $ react-native run-android
 ```
 
 Note 
-**Icon has not placed in the app**
+**Default icon is used for the app**
 
 #### Author
 [Khushboo](https://github.com/khushboo2803) :relaxed: (khushboogrover.mca19.du@gmail.com)
